@@ -1,0 +1,22 @@
+
+<!-- header -->
+<%- include('header', {cssFilePath: '/styles.css'}); -%>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-10 text-center" id="note-header">
+      <h1>Note</h1>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row justify-content-center text-center">
+    <% Object.keys(note).forEach(function(key) { %>
+      <p class= "justify-content-center text-center"><%= key %>:</p>
+      <p class= "justify-content-center text-center"><%= note[key] %>:</p>
+    </div>
+    <% }); %>
+  </div>
+</div>
+<%- include('footer'); -%>
