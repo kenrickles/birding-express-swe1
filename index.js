@@ -44,7 +44,7 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
 // middleware that allows cookies to be parsed
 app.use(cookieParser());
-//
+// use to flash message back
 app.use(session({
   /* the longer key it is the more random it is, the more secure it is.
   The key we want to keep secret, encrypt the information we store in the session */
@@ -81,6 +81,7 @@ app.get('/note', (req, res) => {
 
 // Accept a POST request to create a new note.
 app.post('/note', (req, res) => {
+  // validate the login
   if (req.cookies.loggedIn === undefined) {
     res.redirect('errorPage');
     return;
@@ -121,7 +122,7 @@ app.post('/note', (req, res) => {
 app.get('/note/:id', (req, res) => {
   const { id } = req.params;
 
-  const renderingComments = (noteData) => {
+  const commentsDisplay = (noteData) => {
     pool.query(`Select * FROM comments WHERE note_id=${id}`, (err, results) => {
       if (err) {
         console.log(results);
@@ -143,7 +144,7 @@ app.get('/note/:id', (req, res) => {
     // note to be displayed
     const note = result.rows[0];
     const noteData = { note };
-    // console.log(noteData, 'notes1');
+    // select name of behaviour from table
     pool.query(`SELECT name FROM behaviours INNER JOIN note_behaviours on behaviours.id=behaviour_id WHERE note_behaviours.note_id =${id}`, (behaviourError, behaviourResult) => {
       if (behaviourError) {
         console.log(behaviourResult);
@@ -151,6 +152,8 @@ app.get('/note/:id', (req, res) => {
       }
       noteData.behaviour = behaviourResult.rows;
     });
+
+    // select species name from table
     pool.query(`SELECT name FROM species INNER JOIN notes on species.id = species_id WHERE notes.id = ${id};`, (speciesError, speciesResult) => {
       if (speciesError) {
         console.log(speciesResult);
@@ -158,7 +161,7 @@ app.get('/note/:id', (req, res) => {
       }
       noteData.species = speciesResult.rows[0];
       // run through comments again for render to bypass async and await nonsense
-      renderingComments(noteData);
+      commentsDisplay(noteData);
     });
   };
   pool.query(sqlNoteQuery, whenNoteQueryDone);
@@ -175,7 +178,7 @@ app.post('/note/:id/comment', (req, res) => {
   // storing the comment
   const { comment } = req.body;
 
-  //
+  // storing the req.body
   const commentValues = [id, userId, comment];
 
   // write sql query to insert new comment
@@ -195,12 +198,13 @@ app.post('/note/:id/comment', (req, res) => {
   pool.query(commentSQL, commentValues, commentSQLCallBack);
 });
 
-// Render a list of notes to /
+// Render a list of notes to main page
 app.get('/', (req, res) => {
   if (req.cookies.loggedIn === undefined) {
     res.redirect('errorPage');
     return;
   }
+  // select the data
   const allNotesQuery = 'SELECT notes.id, notes.date, notes.flocksize, species.name AS species_name from notes INNER JOIN species ON notes.species_id = species.id';
   const whenAllNotesQueryDone = (error, result) => {
     if (error) {
@@ -243,15 +247,19 @@ app.post('/signup', (req, res) => {
     name, email, password, password2,
   } = req.body;
   const errors = [];
+  // validation for all fields being filled up
   if (!name || !email || !password || !password2) {
     errors.push({ message: 'Please enter all fields' });
   }
+  // password character at least 6 validation
   if (password.length < 6) {
     errors.push({ message: 'Password Should be at least 6 characters' });
   }
+  // making sure password matches
   if (password !== password2) {
     errors.push({ message: 'Passwords do not match' });
   }
+  // if there are are errors, use flash to display errors.
   if (errors.length > 0) {
     res.render('register', { errors });
   } else {
@@ -273,10 +281,12 @@ app.post('/signup', (req, res) => {
           throw error;
         }
         console.log(result.rows);
+        // validation to see if email has been registered
         if (result.rows.length > 0) {
           errors.push({ message: 'Email already registered' });
           res.render('register', { errors });
         } else {
+          // insert into database
           pool.query(
             `INSERT INTO users (name, email, password)
             VALUES ($1, $2, $3)
@@ -349,9 +359,11 @@ app.post('/login', (req, res) => {
   }); });
 app.delete('/logout', (req, res) => {
   console.log('request to logout came in');
+  // clear all the cookies
   res.clearCookie('userId');
   res.clearCookie('loggedInHash');
   res.clearCookie('loggedIn');
+  // redirect to login page
   res.redirect('/login');
 });
 app.listen(PORT, () => {
