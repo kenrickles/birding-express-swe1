@@ -1,8 +1,4 @@
-CREATE DATABASE birding;
-
--- \c into birding DATABASE
-
-CREATE TABLE notes (
+CREATE TABLE IF NOT EXISTS notes (
   id SERIAL PRIMARY KEY,
   date DATE NOT NULL,
   flocksize INTEGER,
@@ -10,7 +6,7 @@ CREATE TABLE notes (
   species_id INTEGER
 );
 
-create TABLE users (
+create TABLE IF NOT EXISTS users (
 id SERIAL PRIMARY KEY,
 name VARCHAR(255),
 email VARCHAR(255),
@@ -28,8 +24,3 @@ CREATE TABLE IF NOT EXISTS note_behaviours (id SERIAL PRIMARY KEY, note_id INTEG
 CREATE TABLE IF NOT EXISTS behaviours (id SERIAL PRIMARY KEY, name TEXT);
 
 CREATE TABLE IF NOT EXISTS comments (id SERIAL PRIMARY KEY, user_id INTEGER, note_id INTEGER, description TEXT);
-
-
-SELECT name FROM behaviours INNER JOIN note_behaviours on behaviours.id=behaviour_id
-
-SELECT name FROM species INNER JOIN notes on species.id = species_id WHERE notes.id =1;
