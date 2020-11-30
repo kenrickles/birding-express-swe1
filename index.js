@@ -33,7 +33,7 @@ const pool = new Pool(poolConfig);
 // start express and create an express app
 const app = express();
 // setting the port number
-const PORT = 3004;
+const PORT = process.argv[2];
 // overiding post to allow ?method = put or delete
 app.use(methodOverride('_method'));
 // allow the use of `the folder public
