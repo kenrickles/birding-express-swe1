@@ -16,23 +16,12 @@
     <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-menu">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbar-menu">
-      <ul class="navbar-nav">
         <li class="nav-item">
-          <a href="/note" class="nav-link">Add new note</a>
+          <a href="/signup" class="nav-item">Register</a>
         </li>
         <li class="nav-item">
-          <form
-          action="/logout?_method=DELETE"
-          method="POST"
-        >
-          <input 
-            type="submit"
-            value="Logout"
-            class="btn btn-success"
-            id="logout-button"
-          />
-        </form>
+          <a href="/login" class="nav-item">Login</a>
+        </li>
         </li>
         
       </ul>
@@ -41,3 +30,19 @@
   <br>
   <br>
   <br>
+
+
+  <body>
+    <div class="text-center"> Oops, you're not logged in
+    </div>
+
+    <div class=row>
+    <div class="col-sm-12 d-flex justify-content-center">
+      <a href="/login" class="btn btn-primary" role="button">
+        Login</a
+      >
+    </div>
+    </div>
+  </body>
+  
+  <%- include('footer'); -%>
